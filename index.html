@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StatLab — Laboratório Completo</title>
+<style>
+:root{--b:#1565c0;--g:#2e7d32;--o:#ef6c00;--p:#7e22ce;--bd:#d9e4f2;--txt:#172033;--red:#c62828;--muted:#64748b;--shadow:0 14px 35px #0002}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#e3f2fd,#f1f8e9);color:var(--txt);padding:18px}
+.wrap{max-width:1320px;margin:auto}
+/* MAIN NAV */
+.mainnav{position:sticky;top:0;z-index:20;background:rgba(239,247,255,.97);backdrop-filter:blur(10px);padding:12px;border-radius:0 0 24px 24px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;box-shadow:0 4px 18px #0001}
+.mainnav button{background:#fff;color:var(--b);border:2px solid #b7d8ff;border-radius:16px;padding:11px 14px;font-weight:800;font-size:.97rem;cursor:pointer;transition:background .15s,color .15s}
+.mainnav button.active{background:var(--b);color:white;border-color:var(--b)}
+/* SUBNAV */
+.subnav{position:sticky;top:62px;z-index:19;background:rgba(239,247,255,.97);backdrop-filter:blur(8px);padding:10px;border-radius:0 0 20px 20px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;box-shadow:0 3px 12px #0001}
+.subnav button{background:#fff;color:var(--g);border:2px solid #b7f5d0;border-radius:14px;padding:9px 13px;font-weight:800;font-size:.93rem;cursor:pointer;transition:background .15s,color .15s}
+.subnav button.active{background:var(--g);color:white;border-color:var(--g)}
+/* TABS */
+.page{display:none}.page.active{display:block}
+.tab{display:none}.tab.active{display:block}
+/* CARDS */
+header,.card{background:#fff;border:1px solid var(--bd);border-radius:26px;padding:24px;margin-bottom:22px;box-shadow:var(--shadow)}
+h1{font-size:clamp(1.8rem,5vw,3.6rem);line-height:1.05;margin:0 0 10px;color:var(--b)}
+h2{color:var(--g);margin-top:0}
+.subtitle{font-size:1.15rem;line-height:1.45;max-width:1100px}
+.quote{background:#fff8e1;border-left:8px solid var(--o);border-radius:16px;padding:16px;font-weight:800;margin-top:16px}
+.grid{display:grid;grid-template-columns:410px 1fr;gap:22px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:800;margin:15px 0 7px}
+textarea,input,select{width:100%;border:2px solid var(--bd);border-radius:16px;padding:13px;font-size:1.02rem;background:#fbfdff}
+textarea{min-height:140px;line-height:1.45;resize:vertical}
+button{border:0;border-radius:999px;padding:11px 15px;font-weight:800;cursor:pointer;background:var(--b);color:#fff;margin:6px 5px 0 0}
+.green{background:var(--g)}.orange{background:var(--o)}.purple{background:var(--p)}
+.box{border:2px solid #fed7aa;background:#fff7ed;border-radius:20px;padding:17px;margin-top:16px;line-height:1.48;font-size:1.02rem}
+.ok{background:#f0fdf4;border-color:#bbf7d0}.info{background:#eff6ff;border-color:#bfdbfe}.violet{background:#faf5ff;border-color:#e9d5ff}.bad{background:#fef2f2;border-color:#fecaca}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}@media(max-width:850px){.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.metrics{grid-template-columns:1fr}}
+.metric{background:#f8fafc;border:1px solid var(--bd);border-radius:18px;padding:14px}.metric span{display:block;color:var(--muted);font-size:.9rem}.metric b{font-size:1.3rem}
+.step{background:#f8fafc;border:1px solid var(--bd);border-radius:14px;padding:11px;margin:8px 0;line-height:1.45}.step b{color:var(--b)}.calc{background:#fff;border-left:5px solid var(--b);border-radius:10px;padding:9px 11px;margin-top:7px}
+table{width:100%;border-collapse:collapse;background:#fff;margin-top:12px}th,td{border:1px solid var(--bd);padding:9px;text-align:center}th{background:#eef7ff;color:var(--b)}.hit{background:#dcfce7;font-weight:900}
+canvas{width:100%;background:white;border:1px solid var(--bd);border-radius:22px;margin-top:15px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.badge{padding:9px 14px;border-radius:999px;font-weight:800}.b1{background:#dbeafe;color:#1d4ed8}.b2{background:#dcfce7;color:#166534}.b3{background:#fae8ff;color:#86198f}
+.formula{font-size:clamp(1.1rem,2.5vw,2rem);text-align:center;font-weight:900;color:var(--b);background:#eef7ff;border-radius:22px;padding:16px;margin-bottom:15px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:760px){.twocol{grid-template-columns:1fr}}
+footer{margin-top:30px;padding:20px;text-align:center;color:#475569;background:#fff;border:1px solid var(--bd);border-radius:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- MAIN NAV -->
+<nav class="mainnav">
+  <button class="active" onclick="showPage('pg_t',this)">🔬 Teste t</button>
+  <button onclick="showPage('pg_pvalor',this)">📊 Dados → p-valor</button>
+  <button onclick="showPage('pg_anova',this)">⚖️ ANOVA / Fisher</button>
+  <button onclick="showPage('pg_cart',this)">📈 Plano Cartesiano</button>
+</nav>
+
+<!-- ===================== PAGE: TESTE T ===================== -->
+<div id="pg_t" class="page active">
+<nav class="subnav">
+  <button class="active" onclick="showSub('pg_t','ts_one',this);calcOne()">1. Uma amostra</button>
+  <button onclick="showSub('pg_t','ts_ind',this);calcInd()">2. Independentes</button>
+  <button onclick="showSub('pg_t','ts_pair',this);calcPair()">3. Pareado</button>
+</nav>
+
+<section id="ts_one" class="tab active">
+  <header>
+    <div class="badges"><span class="badge b1">Módulo 1</span><span class="badge b2">Uma amostra</span><span class="badge b3">Gosset / Student</span></div>
+    <h1>Teste t para uma amostra</h1>
+    <div class="subtitle">Compara a média de uma única amostra com um valor esperado μ₀.</div>
+    <div class="quote">"O teste t não pergunta apenas se a média mudou. Ele pergunta se ela mudou mais do que o ruído natural dos dados."</div>
+    <div class="box info"><b>William Sealy Gosset, o "Student"</b><br><br>Gosset trabalhava na cervejaria Guinness em Dublin. Por política da empresa, publicou como <b>Student</b>. Em 1908 publicou <i>The Probable Error of a Mean</i>, origem do teste t para pequenas amostras.</div>
+  </header>
+  <div class="grid">
+    <div class="card">
+      <h2>Digite a amostra</h2>
+      <label>Amostra observada</label><textarea id="oneData">10, 12, 11, 13, 14</textarea>
+      <label>Média esperada — μ₀</label><input id="oneMu" value="10">
+      <button onclick="setOne(1)">Diferença clara</button><button class="green" onclick="setOne(2)">Amostra ruidosa</button><button class="orange" onclick="setOne(3)">Amostra maior</button><button class="purple" onclick="animateOne()">Animar</button>
+      <div class="box ok"><b>Pergunta:</b><br>H₀: média = μ₀. H₁: média ≠ μ₀. O teste mede quantos erros-padrão separam a média observada do valor esperado.</div>
+    </div>
+    <div class="card">
+      <h2>Curva esperada sob H₀</h2>
+      <div class="formula">t = (x̄ − μ₀) / (s / √n)</div>
+      <div class="metrics">
+        <div class="metric"><span>n</span><b id="oneN">-</b></div><div class="metric"><span>média</span><b id="oneM">-</b></div><div class="metric"><span>desvio</span><b id="oneS">-</b></div><div class="metric"><span>erro padrão</span><b id="oneSE">-</b></div><div class="metric"><span>diferença</span><b id="oneD">-</b></div><div class="metric"><span>t</span><b id="oneT">-</b></div><div class="metric"><span>gl</span><b id="oneDF">-</b></div><div class="metric"><span>t crítico 5%</span><b id="oneCrit">-</b></div>
+      </div>
+      <canvas id="oneCan" width="1000" height="500"></canvas>
+      <div id="oneSteps" class="box ok"></div>
+      <div class="twocol"><div class="box ok"><b>Conceito-chave:</b><br>Compara uma média observada com um valor esperado.</div><div class="box violet"><b>Graus de liberdade:</b><br>gl = n − 1, porque um valor fica preso após calcular a média.</div></div>
+      <button class="purple" onclick="toggleEl('oneFull')">Mostrar tabela t completa</button>
+      <div id="oneFull" class="box info" style="display:none;overflow:auto;max-height:430px"></div>
+      <div id="oneTable"></div><div id="oneDecision" class="box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="ts_ind" class="tab">
+  <header>
+    <div class="badges"><span class="badge b1">Módulo 2</span><span class="badge b2">Amostras independentes</span><span class="badge b3">Student / Welch</span></div>
+    <h1>Teste t para amostras independentes</h1>
+    <div class="subtitle">Compara dois grupos independentes.</div>
+    <div class="quote">"A diferença entre médias só importa quando é grande em relação à variabilidade dentro dos grupos."</div>
+  </header>
+  <div class="grid">
+    <div class="card">
+      <h2>Digite os grupos</h2>
+      <label>Grupo A</label><textarea id="indA" style="min-height:80px">10, 11, 12, 11, 13</textarea>
+      <label>Grupo B</label><textarea id="indB" style="min-height:80px">14, 15, 13, 16, 15</textarea>
+      <label>Tipo</label><select id="indType"><option value="welch">Welch — variâncias diferentes</option><option value="student">Student clássico — variâncias parecidas</option></select>
+      <button onclick="setInd(1)">Diferença clara</button><button class="green" onclick="setInd(2)">Muita variabilidade</button><button class="orange" onclick="setInd(3)">Médias parecidas</button><button class="purple" onclick="animateInd()">Animar</button>
+      <div class="box ok"><b>Variância:</b><br>Mede o quanto os dados se espalham. O teste t precisa dela porque a diferença entre médias só convence quando é grande em relação ao ruído dos grupos.</div>
+    </div>
+    <div class="card">
+      <h2>Diferença entre médias</h2>
+      <div class="formula" id="indFormula">t = (x̄A − x̄B) / EPdif</div>
+      <div class="metrics">
+        <div class="metric"><span>nA</span><b id="indNA">-</b></div><div class="metric"><span>média A</span><b id="indMA">-</b></div><div class="metric"><span>desvio A</span><b id="indSA">-</b></div><div class="metric"><span>nB</span><b id="indNB">-</b></div><div class="metric"><span>média B</span><b id="indMB">-</b></div><div class="metric"><span>desvio B</span><b id="indSB">-</b></div><div class="metric"><span>diferença</span><b id="indD">-</b></div><div class="metric"><span>t</span><b id="indT">-</b></div><div class="metric"><span>gl</span><b id="indDF">-</b></div><div class="metric"><span>t crítico 5%</span><b id="indCrit">-</b></div>
+      </div>
+      <canvas id="indCan" width="1000" height="500"></canvas>
+      <div id="indSteps" class="box ok"></div>
+      <div class="twocol"><div class="box ok"><b>Conceito:</b><br>H₀ espera diferença zero.</div><div class="box violet"><b>Student vs Welch:</b><br>Student assume variâncias parecidas; Welch aceita variâncias diferentes.</div></div>
+      <button class="purple" onclick="toggleEl('indFull')">Mostrar tabela t completa</button>
+      <div id="indFull" class="box info" style="display:none;overflow:auto;max-height:430px"></div>
+      <div id="indTable"></div><div id="indDecision" class="box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="ts_pair" class="tab">
+  <header>
+    <div class="badges"><span class="badge b1">Módulo 3</span><span class="badge b2">Amostras pareadas</span><span class="badge b3">Antes e depois</span></div>
+    <h1>Teste t pareado</h1>
+    <div class="subtitle">Compara medidas conectadas par a par: antes/depois no mesmo indivíduo, planta ou ponto.</div>
+    <div class="quote">"No teste pareado, o protagonista não é o grupo. É a diferença dentro de cada par."</div>
+  </header>
+  <div class="grid">
+    <div class="card">
+      <h2>Digite os pares</h2>
+      <label>Antes</label><textarea id="pairA" style="min-height:80px">10, 11, 12, 13, 12</textarea>
+      <label>Depois</label><textarea id="pairB" style="min-height:80px">12, 13, 14, 15, 14</textarea>
+      <button onclick="setPair(1)">Efeito claro</button><button class="green" onclick="setPair(2)">Efeito pequeno</button><button class="orange" onclick="setPair(3)">Diferenças mistas</button><button class="purple" onclick="animatePair()">Animar</button>
+      <div class="box ok"><b>Como funciona?</b><br>Calculamos depois − antes em cada par. Depois testamos se a média dessas diferenças é diferente de zero.</div>
+    </div>
+    <div class="card">
+      <h2>Visualização dos pares</h2>
+      <div class="formula">t = média das diferenças / EP das diferenças</div>
+      <div class="metrics">
+        <div class="metric"><span>n pares</span><b id="pairN">-</b></div><div class="metric"><span>média dif.</span><b id="pairM">-</b></div><div class="metric"><span>desvio dif.</span><b id="pairS">-</b></div><div class="metric"><span>t</span><b id="pairT">-</b></div><div class="metric"><span>gl</span><b id="pairDF">-</b></div><div class="metric"><span>t crítico 5%</span><b id="pairCrit">-</b></div>
+      </div>
+      <canvas id="pairCan" width="1000" height="500"></canvas>
+      <div id="pairSteps" class="box ok"></div>
+      <div class="twocol"><div class="box ok"><b>Conceito:</b><br>O teste é feito sobre as diferenças dentro dos pares.</div><div class="box violet"><b>gl:</b><br>Se existem 5 pares, existem 5 diferenças e gl = 4.</div></div>
+      <button class="purple" onclick="toggleEl('pairFull')">Mostrar tabela t completa</button>
+      <div id="pairFull" class="box info" style="display:none;overflow:auto;max-height:430px"></div>
+      <div id="pairTable"></div><div id="pairDecision" class="box"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Teste bicaudal e unicaudal</h2>
+  <div class="twocol">
+    <div class="box ok"><b>Bicaudal</b><br><br>Pergunta: <b>existe diferença?</b><br>H₁: μ ≠ μ₀. O α é dividido nas duas caudas. Mais comum e mais conservador.</div>
+    <div class="box violet"><b>Unicaudal</b><br><br>Pergunta: <b>existe diferença em uma direção?</b><br>H₁: μ > μ₀ ou μ < μ₀. Todo o α fica em uma cauda.</div>
+  </div>
+  <div class="box info"><b>Regra:</b><br>Não se escolhe unicaudal depois de ver o resultado. A direção deve ser definida antes da análise.</div>
+</section>
+<footer>Plataforma construída por <b>Ernandes Sobreira</b> e <b>Wilkinson Lopes Lázaro</b> para fins educacionais.</footer>
+</div><!-- /pg_t -->
+
+<!-- ===================== PAGE: DADOS → P-VALOR ===================== -->
+<div id="pg_pvalor" class="page">
+<nav class="subnav">
+  <button class="active" onclick="showSub('pg_pvalor','pv_t',this);calcPVT()">Teste t</button>
+  <button onclick="showSub('pg_pvalor','pv_anova',this);calcPVAnova()">ANOVA</button>
+  <button onclick="showSub('pg_pvalor','pv_chi',this);calcPVChi()">Qui-quadrado</button>
+</nav>
+
+<header>
+  <div class="badges"><span class="badge b1">Dados reais</span><span class="badge b2">Cálculo automático</span><span class="badge b3">p-valor</span></div>
+  <h1>Dados → Teste → p-valor</h1>
+  <div class="subtitle">Coloque os dados brutos por tratamento. A página calcula a estatística, mostra as contas e estima o p-valor.</div>
+  <div class="quote">"O p-valor nasce depois que transformamos os dados em uma estatística e calculamos a área extrema da distribuição esperada sob H₀."</div>
+</header>
+
+<section id="pv_t" class="tab active">
+  <div class="grid">
+    <div class="card">
+      <h2>Teste t com dados</h2>
+      <label>Grupo A</label><textarea id="pvTA">10, 11, 12, 11, 13</textarea>
+      <label>Grupo B</label><textarea id="pvTB">14, 15, 13, 16, 15</textarea>
+      <label>Tipo</label><select id="pvTType"><option value="welch">Welch</option><option value="student">Student clássico</option><option value="paired">Pareado</option></select>
+      <label>Cauda</label><select id="pvTTail"><option value="two">Bicaudal</option><option value="right">Unicaudal: A > B</option><option value="left">Unicaudal: A < B</option></select>
+      <button onclick="pvSetT(1)">Diferença clara</button><button class="green" onclick="pvSetT(2)">Muita variação</button><button class="orange" onclick="pvSetT(3)">Pareado</button>
+    </div>
+    <div class="card">
+      <h2>Resultado do teste t</h2>
+      <div class="metrics"><div class="metric"><span>média A</span><b id="pvTMA">-</b></div><div class="metric"><span>média B</span><b id="pvTMB">-</b></div><div class="metric"><span>t</span><b id="pvTStat">-</b></div><div class="metric"><span>p aprox.</span><b id="pvTP">-</b></div><div class="metric"><span>gl</span><b id="pvTDF">-</b></div><div class="metric"><span>EP</span><b id="pvTSE">-</b></div><div class="metric"><span>decisão</span><b id="pvTDecShort">-</b></div></div>
+      <canvas id="pvTCan" width="1000" height="420"></canvas>
+      <div id="pvTSteps" class="box ok"></div><div id="pvTDecision" class="box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="pv_anova" class="tab">
+  <div class="grid">
+    <div class="card">
+      <h2>ANOVA com vários tratamentos</h2>
+      <label>Dados por tratamento</label>
+      <textarea id="pvAnovaData">Controle: 10, 11, 12, 11, 13
+Tratamento 1: 14, 15, 13, 16, 15
+Tratamento 2: 17, 18, 16, 19, 18</textarea>
+      <button onclick="pvSetAnova(1)">Exemplo forte</button><button class="green" onclick="pvSetAnova(2)">Exemplo fraco</button>
+      <div class="box info"><b>Formato:</b><br>Uma linha por tratamento:<br>Controle: 10, 11, 12<br>Tratamento: 13, 14, 15</div>
+    </div>
+    <div class="card">
+      <h2>Resultado da ANOVA</h2>
+      <div class="metrics"><div class="metric"><span>k</span><b id="pvAK">-</b></div><div class="metric"><span>N</span><b id="pvAN">-</b></div><div class="metric"><span>F</span><b id="pvAF">-</b></div><div class="metric"><span>p aprox.</span><b id="pvAP">-</b></div><div class="metric"><span>gl entre</span><b id="pvADFB">-</b></div><div class="metric"><span>gl dentro</span><b id="pvADFW">-</b></div><div class="metric"><span>decisão</span><b id="pvADecShort">-</b></div></div>
+      <canvas id="pvACan" width="1000" height="420"></canvas>
+      <div id="pvATable"></div><div id="pvASteps" class="box ok"></div><div id="pvADecision" class="box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="pv_chi" class="tab">
+  <div class="grid">
+    <div class="card">
+      <h2>Qui-quadrado com frequências</h2>
+      <label>Tabela de frequências</label>
+      <textarea id="pvChiData">30, 10
+15, 25</textarea>
+      <button onclick="pvSetChi(1)">Exemplo 2x2</button><button class="green" onclick="pvSetChi(2)">Exemplo 3x3</button>
+      <div class="box info"><b>Formato:</b><br>Uma linha por categoria:<br>30, 10<br>15, 25</div>
+    </div>
+    <div class="card">
+      <h2>Resultado do qui-quadrado</h2>
+      <div class="metrics"><div class="metric"><span>χ²</span><b id="pvCStat">-</b></div><div class="metric"><span>gl</span><b id="pvCDF">-</b></div><div class="metric"><span>p aprox.</span><b id="pvCP">-</b></div><div class="metric"><span>decisão</span><b id="pvCDecShort">-</b></div></div>
+      <canvas id="pvCCan" width="1000" height="420"></canvas>
+      <div id="pvCTable"></div><div id="pvCSteps" class="box ok"></div><div id="pvCDecision" class="box"></div>
+    </div>
+  </div>
+</section>
+<footer>Plataforma construída por <b>Ernandes Sobreira</b> e <b>Wilkinson Lopes Lázaro</b> para fins educacionais.</footer>
+</div><!-- /pg_pvalor -->
+
+<!-- ===================== PAGE: ANOVA / FISHER ===================== -->
+<div id="pg_anova" class="page">
+<header>
+  <h1>Como Fisher calculou a ANOVA</h1>
+  <div class="subtitle">Digite dados por tratamento e veja a soma dos quadrados, os graus de liberdade, os quadrados médios, o F de Fisher e o p-valor aproximado.</div>
+  <div class="quote">"ANOVA separa a variabilidade em sinal dos tratamentos e ruído natural."</div>
+</header>
+<div class="grid">
+  <section class="card">
+    <h2>Dados dos tratamentos</h2>
+    <p><b>Uma linha por tratamento:</b></p>
+    <textarea id="anovaData2" spellcheck="false">Controle: 10, 11, 12, 11, 13
+Tratamento 1: 14, 15, 13, 16, 15
+Tratamento 2: 17, 18, 16, 19, 18</textarea>
+    <button onclick="anovaExemploForte()">Exemplo forte</button><button class="green" onclick="anovaExemploFraco()">Exemplo fraco</button><button class="purple" onclick="anovaExemploDois()">Só 2 tratamentos</button><button class="orange" onclick="calcAnovaFisher()">Calcular</button>
+    <div class="box info"><b>Formato:</b><br>Controle: 10, 11, 12<br>Tratamento 1: 14, 15, 13</div>
+    <div class="box violet"><b>Pergunta de Fisher:</b><br>A diferença entre tratamentos é maior que a variabilidade natural dentro dos tratamentos?</div>
+  </section>
+  <section class="card">
+    <h2>Resultado da ANOVA</h2>
+    <div class="metrics">
+      <div class="metric"><span>F</span><b id="aF2">-</b></div><div class="metric"><span>p aprox.</span><b id="aP2">-</b></div><div class="metric"><span>SQ entre</span><b id="aSSB2">-</b></div><div class="metric"><span>SQ dentro</span><b id="aSSW2">-</b></div><div class="metric"><span>gl entre</span><b id="aDFB2">-</b></div><div class="metric"><span>gl dentro</span><b id="aDFW2">-</b></div><div class="metric"><span>QM entre</span><b id="aMSB2">-</b></div><div class="metric"><span>QM dentro</span><b id="aMSW2">-</b></div>
+    </div>
+    <canvas id="anovaGrafico2" width="1000" height="340"></canvas>
+    <div id="anovaStatus2" class="box info"></div>
+    <div id="anovaPassos2"></div>
+    <div id="anovaTabela2"></div>
+    <div id="anovaDecisao2" class="box"></div>
+  </section>
+</div>
+<section class="card">
+  <h2>Ideia central</h2>
+  <div class="step"><b>SQ total = SQ entre + SQ dentro</b><div class="calc">SQ entre mede o efeito dos tratamentos. SQ dentro mede a bagunça natural dos dados.</div></div>
+  <div class="step"><b>F = QM entre / QM dentro</b><div class="calc">Se F é grande, o sinal dos tratamentos é maior que o ruído natural.</div></div>
+</section>
+<footer>Plataforma construída por <b>Ernandes Sobreira</b> e <b>Wilkinson Lopes Lázaro</b> para fins educacionais.</footer>
+</div><!-- /pg_anova -->
+
+<!-- ===================== PAGE: PLANO CARTESIANO ===================== -->
+<div id="pg_cart" class="page">
+<header>
+  <div class="badges"><span class="badge b1">Descartes</span><span class="badge b2">Plano X,Y</span><span class="badge b3">Modelagem</span></div>
+  <h1>Laboratório Cartesiano</h1>
+  <div class="subtitle">Digite dados com pares X,Y, escolha um modelo e veja como uma equação vira desenho no plano cartesiano.</div>
+  <div class="quote">"Um ponto deixa de ser apenas um lugar no desenho e passa a ser um par de números: (x, y)."</div>
+</header>
+<div class="grid">
+  <section class="card">
+    <h2>1. Dados X,Y</h2>
+    <label>Digite os pares X,Y</label>
+    <textarea id="cartDados">1, 2.1
+2, 3.9
+3, 6.2
+4, 7.8
+5, 10.1
+6, 11.9
+7, 14.2
+8, 15.8</textarea>
+    <label>Modelo</label>
+    <select id="cartModelo"><option value="linear">Linear — y = a + bx</option><option value="exponencial">Exponencial — y = a·e^(bx)</option><option value="logaritmico">Logarítmico — y = a + b ln(x)</option><option value="potencia">Potência — y = a·x^b</option><option value="logistico">Logístico — y = L / (1 + e^(-k(x-x0)))</option></select>
+    <button onclick="cartExemplo(1)">Linear</button><button class="green" onclick="cartExemplo(2)">Exponencial</button><button class="orange" onclick="cartExemplo(3)">Logístico</button><button class="purple" onclick="cartCalcular()">Calcular</button>
+    <div class="box info"><b>Formato:</b><br>Cada linha deve ter um par: x, y<br>Exemplo:<br>1, 2.1<br>2, 3.9</div>
+    <div class="box violet"><b>Ideia de Descartes:</b><br>O eixo X é variável explicativa. O eixo Y é a resposta. A curva mostra como uma variável muda em relação à outra.</div>
+  </section>
+  <section class="card">
+    <h2>2. Plano cartesiano e modelo</h2>
+    <div class="metrics"><div class="metric"><span>modelo</span><b id="cModelo">-</b></div><div class="metric"><span>equação</span><b id="cEq">-</b></div><div class="metric"><span>R² aprox.</span><b id="cR2">-</b></div><div class="metric"><span>n</span><b id="cN">-</b></div></div>
+    <canvas id="cartGrafico" width="1000" height="560"></canvas>
+    <div id="cartPassos" class="box ok"></div>
+    <div id="cartTabela" class="box info"></div>
+  </section>
+</div>
+<section class="card">
+  <h2>3. O que cada modelo significa?</h2>
+  <div class="box ok"><b>Linear — y = a + bx</b><br><br>Usado quando Y aumenta ou diminui em ritmo constante.</div>
+  <div class="box info"><b>Exponencial — y = a·e^(bx)</b><br><br>Usado quando a mudança acelera ou desacelera proporcionalmente.</div>
+  <div class="box violet"><b>Logarítmico — y = a + b ln(x)</b><br><br>Usado quando Y muda muito no começo e depois estabiliza. Exige X > 0.</div>
+  <div class="box info"><b>Potência — y = a·x^b</b><br><br>Muito usado em relações alométricas, biomassa e fenômenos ecológicos. Exige X e Y positivos.</div>
+  <div class="box ok"><b>Logístico — y = L / (1 + e^(-k(x-x0)))</b><br><br>Usado quando há crescimento inicial, ponto de inflexão e saturação.</div>
+</section>
+<footer>Plataforma construída por <b>Ernandes Sobreira</b> e <b>Wilkinson Lopes Lázaro</b> para fins educacionais.</footer>
+</div><!-- /pg_cart -->
+
+</div><!-- /wrap -->
+
+<script>
+// ======================== NAVIGATION ========================
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mainnav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showSub(pageId, tabId, btn) {
+  document.querySelectorAll('#' + pageId + ' .tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#' + pageId + ' .subnav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+function toggleEl(id) { var el = document.getElementById(id); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function fmtN(x) { return Number.isFinite(x) ? x.toLocaleString('pt-BR', { maximumFractionDigits: 4 }) : '-'; }
+
+// ======================== MATH UTILS ========================
+function mn(a) { return a.reduce((s, x) => s + x, 0) / a.length; }
+function sdv(a, m) { return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); }
+function parseNums(s) { return String(s).replace(/;/g, ' ').replace(/,/g, ' ').split(/\s+/).map(x => Number(x.trim().replace(',', '.'))).filter(Number.isFinite); }
+
+function gammaLog(z) {
+  const g = 7, p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - gammaLog(1 - z);
+  z -= 1; let x = p[0]; for (let i = 1; i < g + 2; i++) x += p[i] / (z + i); let t = z + g + 0.5;
+  return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+}
+function betaLog(a, b) { return gammaLog(a) + gammaLog(b) - gammaLog(a + b); }
+function tPdf(x, df) { let a = gammaLog((df + 1) / 2) - gammaLog(df / 2) - 0.5 * Math.log(df * Math.PI); return Math.exp(a) * Math.pow(1 + x * x / df, -(df + 1) / 2); }
+function chiPdf(x, k) { if (x <= 0) return 0; return Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - (k / 2) * Math.log(2) - gammaLog(k / 2)); }
+function fPdf(x, d1, d2) { if (x <= 0) return 0; let a = d1 / 2, b = d2 / 2; return Math.exp(a * Math.log(d1 / d2) + (a - 1) * Math.log(x) - (a + b) * Math.log(1 + d1 * x / d2) - betaLog(a, b)); }
+function integrate(f, a, b, n) { n = n || 900; if (a > b) { let tmp = a; a = b; b = tmp; } let h = (b - a) / n, s = f(a) + f(b); for (let i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2); return s * h / 3; }
+function tCdf(x, df) { if (x === 0) return 0.5; let a = integrate(v => tPdf(v, df), 0, Math.abs(x)); return x > 0 ? 0.5 + a : 0.5 - a; }
+function pT(t, df, tail) { if (tail === 'two') return 2 * (1 - tCdf(Math.abs(t), df)); if (tail === 'right') return 1 - tCdf(t, df); return tCdf(t, df); }
+function pRight(pdf, x, max) { return integrate(pdf, x, max); }
+function welchDF(s1, n1, s2, n2) { let a = s1 * s1 / n1, b = s2 * s2 / n2; return (a + b) ** 2 / (a * a / (n1 - 1) + b * b / (n2 - 1)); }
+function pooledSD(s1, n1, s2, n2) { return Math.sqrt(((n1 - 1) * s1 * s1 + (n2 - 1) * s2 * s2) / (n1 + n2 - 2)); }
+
+const CRIT = [[1,6.314,12.706,31.821,63.657,636.619],[2,2.920,4.303,6.965,9.925,31.599],[3,2.353,3.182,4.541,5.841,12.924],[4,2.132,2.776,3.747,4.604,8.610],[5,2.015,2.571,3.365,4.032,6.869],[6,1.943,2.447,3.143,3.707,5.959],[7,1.895,2.365,2.998,3.499,5.408],[8,1.860,2.306,2.896,3.355,5.041],[9,1.833,2.262,2.821,3.250,4.781],[10,1.812,2.228,2.764,3.169,4.587],[15,1.753,2.131,2.602,2.947,4.073],[20,1.725,2.086,2.528,2.845,3.850],[30,1.697,2.042,2.457,2.750,3.646],[60,1.671,2.000,2.390,2.660,3.460],[120,1.658,1.980,2.358,2.617,3.373],[999,1.645,1.960,2.326,2.576,3.291]];
+function rowCrit(df) { return CRIT.find(r => df <= r[0]) || CRIT[CRIT.length - 1]; }
+function tableFull() { return '<b>Tabela t de Student completa (bicaudal)</b><table><tr><th>gl</th><th>α=0,10</th><th>α=0,05</th><th>α=0,02</th><th>α=0,01</th><th>α=0,001</th></tr>' + CRIT.map(r => '<tr><td><b>' + (r[0] === 999 ? '∞' : r[0]) + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td></tr>').join('') + '</table>'; }
+function decisionT(tableId, decId, df, t, msg) {
+  let r = rowCrit(Math.ceil(df)), a = Math.abs(t);
+  document.getElementById(tableId).innerHTML = '<table><tr><th>gl</th><th>linha</th><th>|t|</th><th>α=0,10</th><th>α=0,05</th><th>α=0,01</th></tr><tr><td>' + fmtN(df) + '</td><td>' + (r[0] === 999 ? '∞' : r[0]) + '</td><td><b>' + fmtN(a) + '</b></td><td class="' + (a > r[1] ? 'hit' : '') + '">' + r[1] + '</td><td class="' + (a > r[2] ? 'hit' : '') + '">' + r[2] + '</td><td class="' + (a > r[4] ? 'hit' : '') + '">' + r[4] + '</td></tr></table>';
+  document.getElementById(decId).className = 'box ' + (a > r[2] ? 'ok' : 'bad');
+  document.getElementById(decId).innerHTML = 'Seu |t| = <b>' + fmtN(a) + '</b>. t crítico em α=0,05 é <b>' + r[2] + '</b>. ' + (a > r[2] ? 'Rejeitamos H₀. ' + msg : 'Não rejeitamos H₀. A diferença pode ser explicada pelo ruído dos dados.');
+}
+
+// ======================== PAGE 1: TESTE T ========================
+var ONE = {}, IND = {}, PAIR = {};
+
+function calcOne(shownT) {
+  var v = parseNums(document.getElementById('oneData').value), mu = parseNums(document.getElementById('oneMu').value)[0];
+  if (v.length < 2 || !Number.isFinite(mu)) return;
+  var n = v.length, m = mn(v), s = sdv(v, m), se = s / Math.sqrt(n), d = m - mu, t = d / se, df = n - 1, r = rowCrit(df), tv = Number.isFinite(shownT) ? shownT : t;
+  ONE = { v, mu, n, m, s, se, d, t, df };
+  document.getElementById('oneN').textContent = n; document.getElementById('oneM').textContent = fmtN(m); document.getElementById('oneS').textContent = fmtN(s); document.getElementById('oneSE').textContent = fmtN(se); document.getElementById('oneD').textContent = fmtN(d); document.getElementById('oneT').textContent = fmtN(t); document.getElementById('oneDF').textContent = df; document.getElementById('oneCrit').textContent = r[2];
+  document.getElementById('oneSteps').innerHTML = '<div class=step><b>Passo 1 — média:</b><div class=calc>x̄ = ' + fmtN(m) + ' | n = ' + n + '</div></div><div class=step><b>Passo 2 — desvio:</b><div class=calc>s = ' + fmtN(s) + '</div></div><div class=step><b>Passo 3 — EP:</b><div class=calc>EP = s/√n = ' + fmtN(se) + '</div></div><div class=step><b>Passo 4 — diferença:</b><div class=calc>x̄ − μ₀ = ' + fmtN(d) + '</div></div><div class=step><b>Passo 5 — t:</b><div class=calc>t = ' + fmtN(d) + ' / ' + fmtN(se) + ' = <b>' + fmtN(t) + '</b></div></div><div class=step><b>Passo 6 — gl:</b><div class=calc>gl = n−1 = ' + df + '</div></div>';
+  drawOne(tv);
+  decisionT('oneTable', 'oneDecision', df, t, 'Há evidência de que a média observada difere de μ₀.');
+  document.getElementById('oneFull').innerHTML = tableFull();
+}
+function drawOne(t) {
+  var c = document.getElementById('oneCan').getContext('2d'), cx = 500, by = 330, sc = 74;
+  c.clearRect(0, 0, 1000, 500);
+  c.fillStyle = 'rgba(239,108,0,.18)'; c.fillRect(cx + 2 * sc, 105, 300, 225); c.fillRect(90, 105, cx - 2 * sc - 90, 225);
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(90, by); c.lineTo(920, by); c.moveTo(90, by); c.lineTo(90, 70); c.stroke();
+  c.fillStyle = '#172033'; c.font = 'bold 17px Arial'; c.textAlign = 'center'; c.fillText('Eixo X: distância padronizada / valores t', 500, 388);
+  [-3,-2,-1,0,1,2,3].forEach(k => { var x = cx + k * sc; c.fillText(k === 0 ? '0 / μ₀' : k + ' EP', x, by + 25); });
+  c.beginPath(); c.lineWidth = 5; c.strokeStyle = '#1565c0';
+  for (var x = -4; x <= 4; x += 0.03) { var px = cx + x * sc, py = by - Math.exp(-x * x / 2) * 170; if (x <= -3.97) c.moveTo(px, py); else c.lineTo(px, py); }
+  c.stroke();
+  ONE.v.forEach((val, i) => { var px = Math.max(100, Math.min(900, cx + (val - ONE.mu) / ONE.se * sc)), py = by - 25 - (i % 3) * 23; c.beginPath(); c.arc(px, py, 8, 0, 7); c.fillStyle = '#2563eb'; c.fill(); c.fillStyle = '#111'; c.font = '13px Arial'; c.fillText(val, px, py - 12); });
+  var tx = Math.max(100, Math.min(900, cx + t * sc)), ty = by - Math.exp(-t * t / 2) * 170;
+  c.strokeStyle = '#c62828'; c.lineWidth = 4; c.beginPath(); c.moveTo(cx, 100); c.lineTo(cx, by); c.stroke();
+  c.strokeStyle = '#2e7d32'; c.beginPath(); c.moveTo(tx, 150); c.lineTo(tx, by); c.stroke();
+  c.beginPath(); c.arc(tx, ty, 13, 0, 7); c.fillStyle = '#22c55e'; c.fill(); c.strokeStyle = 'white'; c.stroke();
+  c.fillStyle = '#111'; c.font = 'bold 24px Arial'; c.fillText('t = ' + fmtN(t), tx, 75);
+}
+function animateOne() { calcOne(0); var final = ONE.t, start = performance.now(); function f(now) { var p = Math.min(1, (now - start) / 1100), e = 1 - (1 - p) ** 3; calcOne(final * e); if (p < 1) requestAnimationFrame(f); } requestAnimationFrame(f); }
+function setOne(x) { if (x === 1) { document.getElementById('oneData').value = '10, 12, 11, 13, 14'; document.getElementById('oneMu').value = '10'; } if (x === 2) { document.getElementById('oneData').value = '7, 16, 9, 15, 13'; document.getElementById('oneMu').value = '10'; } if (x === 3) { document.getElementById('oneData').value = '10,11,12,12,13,11,12,13,14,12,11,13,12,14,13,12,13,11,12,13'; document.getElementById('oneMu').value = '10'; } calcOne(); }
+
+function calcInd(progress) {
+  if (progress === undefined) progress = 1;
+  var A = parseNums(document.getElementById('indA').value), B = parseNums(document.getElementById('indB').value);
+  if (A.length < 2 || B.length < 2) return;
+  var nA = A.length, nB = B.length, mA = mn(A), mB = mn(B), sA = sdv(A, mA), sB = sdv(B, mB), d = mA - mB, se, df;
+  if (document.getElementById('indType').value === 'student') { var sp = pooledSD(sA, nA, sB, nB); se = sp * Math.sqrt(1 / nA + 1 / nB); df = nA + nB - 2; document.getElementById('indFormula').textContent = 'Student: t = (x̄A − x̄B) / [sp × √(1/nA+1/nB)]'; }
+  else { se = Math.sqrt(sA * sA / nA + sB * sB / nB); df = welchDF(sA, nA, sB, nB); document.getElementById('indFormula').textContent = 'Welch: t = (x̄A − x̄B) / √(sA²/nA + sB²/nB)'; }
+  var t = d / se, r = rowCrit(Math.ceil(df));
+  IND = { A, B, mA, mB, sA, sB, d, se, df, t };
+  document.getElementById('indNA').textContent = nA; document.getElementById('indMA').textContent = fmtN(mA); document.getElementById('indSA').textContent = fmtN(sA); document.getElementById('indNB').textContent = nB; document.getElementById('indMB').textContent = fmtN(mB); document.getElementById('indSB').textContent = fmtN(sB); document.getElementById('indD').textContent = fmtN(d); document.getElementById('indT').textContent = fmtN(t); document.getElementById('indDF').textContent = fmtN(df); document.getElementById('indCrit').textContent = r[2];
+  var tipo = document.getElementById('indType').value === 'student' ? 'EPdif = sp × √(1/nA + 1/nB) = ' + fmtN(se) : 'EPdif = √(sA²/nA + sB²/nB) = ' + fmtN(se);
+  document.getElementById('indSteps').innerHTML = '<div class=step><b>Passo 1:</b><div class=calc>x̄A=' + fmtN(mA) + ' | x̄B=' + fmtN(mB) + '</div></div><div class=step><b>Passo 2:</b><div class=calc>sA=' + fmtN(sA) + ' | sB=' + fmtN(sB) + '</div></div><div class=step><b>Passo 3:</b><div class=calc>diferença=' + fmtN(d) + '</div></div><div class=step><b>Passo 4:</b><div class=calc>' + tipo + '</div></div><div class=step><b>Passo 5:</b><div class=calc>t = ' + fmtN(d) + '/' + fmtN(se) + ' = <b>' + fmtN(t) + '</b></div></div><div class=step><b>Passo 6:</b><div class=calc>gl = ' + fmtN(df) + '</div></div>';
+  drawInd(progress); decisionT('indTable', 'indDecision', df, t, 'Há evidência de diferença entre as médias.'); document.getElementById('indFull').innerHTML = tableFull();
+}
+function drawInd(p) {
+  var c = document.getElementById('indCan').getContext('2d'); c.clearRect(0, 0, 1000, 500);
+  var all = [...IND.A, ...IND.B, IND.mA, IND.mB], min = Math.min(...all) - 1, max = Math.max(...all) + 1;
+  var xc = v => 90 + (v - min) / (max - min) * 820, yA = 190, yB = 315;
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(90, 410); c.lineTo(920, 410); c.stroke();
+  c.fillStyle = '#111'; c.font = 'bold 18px Arial'; c.textAlign = 'center'; c.fillText('Eixo X: valores medidos', 500, 450); c.fillText('Grupo A', 135, 155); c.fillText('Grupo B', 135, 280);
+  function pt(px, py, col, v) { c.beginPath(); c.arc(px, py, 9, 0, 7); c.fillStyle = col; c.fill(); c.fillStyle = '#111'; c.font = '13px Arial'; c.fillText(v, px, py - 12); }
+  IND.A.forEach((v, i) => pt(xc(v), yA + (i % 3) * 20, '#2563eb', v)); IND.B.forEach((v, i) => pt(xc(v), yB + (i % 3) * 20, '#16a34a', v));
+  var x1 = xc(IND.mA), x2 = xc(IND.mA + (IND.mB - IND.mA) * p);
+  c.strokeStyle = '#2563eb'; c.lineWidth = 4; c.beginPath(); c.moveTo(x1, 90); c.lineTo(x1, 380); c.stroke();
+  c.strokeStyle = '#16a34a'; c.beginPath(); c.moveTo(x2, 90); c.lineTo(x2, 380); c.stroke();
+  c.strokeStyle = '#7e22ce'; c.beginPath(); c.moveTo(x1, 115); c.lineTo(x2, 115); c.stroke();
+  c.fillStyle = '#111'; c.font = 'bold 24px Arial'; c.fillText('t = ' + fmtN(IND.t * p), 500, 60);
+}
+function animateInd() { calcInd(0); var s = performance.now(); function f(n) { var p = Math.min(1, (n - s) / 1100), e = 1 - (1 - p) ** 3; calcInd(e); if (p < 1) requestAnimationFrame(f); } requestAnimationFrame(f); }
+function setInd(x) { if (x === 1) { document.getElementById('indA').value = '10,11,12,11,13'; document.getElementById('indB').value = '14,15,13,16,15'; } if (x === 2) { document.getElementById('indA').value = '7,14,9,15,10'; document.getElementById('indB').value = '10,18,12,20,13'; } if (x === 3) { document.getElementById('indA').value = '10,11,12,11,13'; document.getElementById('indB').value = '11,12,12,13,12'; } calcInd(); }
+
+function calcPair(progress) {
+  if (progress === undefined) progress = 1;
+  var A = parseNums(document.getElementById('pairA').value), B = parseNums(document.getElementById('pairB').value);
+  if (A.length < 2 || B.length < 2 || A.length !== B.length) return;
+  var dif = A.map((v, i) => B[i] - v), n = dif.length, m = mn(dif), s = sdv(dif, m), se = s / Math.sqrt(n), t = m / se, df = n - 1, r = rowCrit(df);
+  PAIR = { A, B, dif, n, m, s, se, t, df };
+  document.getElementById('pairN').textContent = n; document.getElementById('pairM').textContent = fmtN(m); document.getElementById('pairS').textContent = fmtN(s); document.getElementById('pairT').textContent = fmtN(t); document.getElementById('pairDF').textContent = df; document.getElementById('pairCrit').textContent = r[2];
+  document.getElementById('pairSteps').innerHTML = '<div class=step><b>Passo 1:</b><div class=calc>diferenças: ' + dif.map(fmtN).join(' ; ') + '</div></div><div class=step><b>Passo 2:</b><div class=calc>d̄ = ' + fmtN(m) + '</div></div><div class=step><b>Passo 3:</b><div class=calc>sd = ' + fmtN(s) + '</div></div><div class=step><b>Passo 4:</b><div class=calc>EP = sd/√n = ' + fmtN(se) + '</div></div><div class=step><b>Passo 5:</b><div class=calc>t = ' + fmtN(m) + '/' + fmtN(se) + ' = <b>' + fmtN(t) + '</b></div></div><div class=step><b>Passo 6:</b><div class=calc>gl = n−1 = ' + df + '</div></div>';
+  drawPair(progress); decisionT('pairTable', 'pairDecision', df, t, 'Há evidência de que a média das diferenças é diferente de zero.'); document.getElementById('pairFull').innerHTML = tableFull();
+}
+function drawPair(p) {
+  var c = document.getElementById('pairCan').getContext('2d'); c.clearRect(0, 0, 1000, 500);
+  var all = [...PAIR.A, ...PAIR.B], min = Math.min(...all) - 1, max = Math.max(...all) + 1;
+  var xc = v => 120 + (v - min) / (max - min) * 760, y1 = 165, y2 = 325;
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(100, 410); c.lineTo(920, 410); c.stroke();
+  c.fillStyle = '#111'; c.font = 'bold 18px Arial'; c.textAlign = 'center'; c.fillText('Eixo X: valores medidos', 500, 450); c.fillText('ANTES', 150, 130); c.fillText('DEPOIS', 155, 290);
+  function pt(px, py, col, v) { c.beginPath(); c.arc(px, py, 10, 0, 7); c.fillStyle = col; c.fill(); c.fillStyle = '#111'; c.font = '13px Arial'; c.fillText(v, px, py - 15); }
+  PAIR.A.forEach((v, i) => { var x1c = xc(v), x2c = xc(v + (PAIR.B[i] - v) * p); c.strokeStyle = PAIR.B[i] > v ? '#16a34a' : '#dc2626'; c.lineWidth = 3; c.beginPath(); c.moveTo(x1c, y1); c.lineTo(x2c, y2); c.stroke(); pt(x1c, y1, '#2563eb', v); pt(x2c, y2, '#16a34a', PAIR.B[i]); });
+  c.fillStyle = '#7e22ce'; c.font = 'bold 24px Arial'; c.fillText('t pareado = ' + fmtN(PAIR.t * p), 500, 60);
+}
+function animatePair() { calcPair(0); var s = performance.now(); function f(n) { var p = Math.min(1, (n - s) / 1100), e = 1 - (1 - p) ** 3; calcPair(e); if (p < 1) requestAnimationFrame(f); } requestAnimationFrame(f); }
+function setPair(x) { if (x === 1) { document.getElementById('pairA').value = '10,11,12,13,12'; document.getElementById('pairB').value = '12,13,14,15,14'; } if (x === 2) { document.getElementById('pairA').value = '10,11,12,13,12'; document.getElementById('pairB').value = '10,11,13,13,12'; } if (x === 3) { document.getElementById('pairA').value = '10,11,12,13,12'; document.getElementById('pairB').value = '12,9,14,11,13'; } calcPair(); }
+
+['oneData', 'oneMu'].forEach(id => document.getElementById(id).addEventListener('input', () => calcOne()));
+['indA', 'indB', 'indType'].forEach(id => document.getElementById(id).addEventListener('input', () => calcInd()));
+['pairA', 'pairB'].forEach(id => document.getElementById(id).addEventListener('input', () => calcPair()));
+
+// ======================== PAGE 2: DADOS → P-VALOR ========================
+function pvDecision(p, shortId, boxId, msg) {
+  document.getElementById(shortId).textContent = p < 0.05 ? 'rejeita H0' : 'não rejeita H0';
+  document.getElementById(boxId).className = 'box ' + (p < 0.05 ? 'ok' : 'bad');
+  document.getElementById(boxId).innerHTML = '<b>Decisão:</b><br>' + (p < 0.05 ? 'p < 0,05. Rejeitamos H0. ' + msg : 'p ≥ 0,05. Não rejeitamos H0. A diferença pode ser explicada pelo acaso.');
+}
+function pvDrawBars(canId, groups) {
+  var c = document.getElementById(canId).getContext('2d'), W = 1000, H = 420; c.clearRect(0, 0, W, H);
+  var vals = groups.flatMap(g => g.values), vmin = Math.min(...vals), vmax = Math.max(...vals), range = vmax - vmin || 1;
+  var base = 350, top = 45, left = 60, right = 940, gap = (right - left) / groups.length;
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(left, base); c.lineTo(right, base); c.stroke();
+  c.fillStyle = '#172033'; c.font = 'bold 15px Arial'; c.textAlign = 'center'; c.fillText('Pontos = dados | linha laranja = média', 500, 26);
+  groups.forEach((g, gi) => {
+    var x0 = left + gi * gap, m = mn(g.values);
+    c.fillStyle = '#172033'; c.font = 'bold 13px Arial'; c.fillText(g.name, x0 + gap / 2, 390);
+    g.values.forEach((v, i) => { var x = x0 + 24 + i * 18, y = base - (v - vmin) / range * (base - top); c.beginPath(); c.arc(x, y, 7, 0, 7); c.fillStyle = gi % 2 ? '#16a34a' : '#2563eb'; c.fill(); c.fillStyle = '#111'; c.font = '11px Arial'; c.fillText(v, x, y - 10); });
+    var ym = base - (m - vmin) / range * (base - top);
+    c.strokeStyle = '#ef6c00'; c.lineWidth = 4; c.beginPath(); c.moveTo(x0 + 12, ym); c.lineTo(x0 + gap - 18, ym); c.stroke();
+    c.fillStyle = '#ef6c00'; c.fillText('m=' + fmtN(m), x0 + gap / 2, ym - 12);
+  });
+}
+function pvDrawDist(canId, pdf, obs, max, label) {
+  var c = document.getElementById(canId).getContext('2d'), W = 1000, H = 420; c.clearRect(0, 0, W, H);
+  var base = 320, pad = 80, ymax = 0;
+  for (var i = 0; i < 700; i++) { var x = max * i / 700; ymax = Math.max(ymax, pdf(x)); }
+  var xs = x => pad + x / max * (W - 2 * pad), ys = y => base - y / ymax * 240;
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(pad, base); c.lineTo(W - pad, base); c.stroke();
+  c.beginPath(); c.lineWidth = 5; c.strokeStyle = '#1565c0';
+  for (var i = 0; i < 700; i++) { var x = max * i / 700, px = xs(x), py = ys(pdf(x)); if (i === 0) c.moveTo(px, py); else c.lineTo(px, py); }
+  c.stroke();
+  c.fillStyle = 'rgba(239,108,0,.35)'; c.beginPath(); c.moveTo(xs(obs), base);
+  for (var i = 0; i < 300; i++) { var x = obs + (max - obs) * i / 300; c.lineTo(xs(x), ys(pdf(x))); }
+  c.lineTo(xs(max), base); c.closePath(); c.fill();
+  c.strokeStyle = '#2e7d32'; c.lineWidth = 4; c.beginPath(); c.moveTo(xs(obs), 90); c.lineTo(xs(obs), base); c.stroke();
+  c.fillStyle = '#172033'; c.font = 'bold 22px Arial'; c.textAlign = 'center'; c.fillText(label + ' = ' + fmtN(obs), xs(obs), 70);
+  c.fillStyle = '#ef6c00'; c.font = 'bold 17px Arial'; c.fillText('área à direita = p-valor', W / 2, 45);
+}
+
+function calcPVT() {
+  var A = parseNums(document.getElementById('pvTA').value), B = parseNums(document.getElementById('pvTB').value), type = document.getElementById('pvTType').value, tail = document.getElementById('pvTTail').value;
+  if (A.length < 2 || B.length < 2) return;
+  var mA = mn(A), mB = mn(B), sA = sdv(A, mA), sB = sdv(B, mB), se, df, t, steps = '';
+  if (type === 'paired') { if (A.length !== B.length) return; var dif = A.map((v, i) => v - B[i]), md = mn(dif), sdD = sdv(dif, md); se = sdD / Math.sqrt(dif.length); t = md / se; df = dif.length - 1; steps = '<div class=step><b>Pareado:</b><div class=calc>difs: ' + dif.map(fmtN).join(' ; ') + '<br>d̄=' + fmtN(md) + '<br>EP=' + fmtN(se) + '</div></div>'; }
+  else if (type === 'student') { var sp = pooledSD(sA, A.length, sB, B.length); se = sp * Math.sqrt(1 / A.length + 1 / B.length); t = (mA - mB) / se; df = A.length + B.length - 2; steps = '<div class=step><b>Student:</b><div class=calc>sp=' + fmtN(sp) + ' | EP=' + fmtN(se) + ' | t=' + fmtN(t) + '</div></div>'; }
+  else { se = Math.sqrt(sA * sA / A.length + sB * sB / B.length); t = (mA - mB) / se; df = welchDF(sA, A.length, sB, B.length); steps = '<div class=step><b>Welch:</b><div class=calc>EP=' + fmtN(se) + ' | gl adj=' + fmtN(df) + ' | t=' + fmtN(t) + '</div></div>'; }
+  var p = Math.max(0, Math.min(1, pT(t, df, tail)));
+  document.getElementById('pvTMA').textContent = fmtN(mA); document.getElementById('pvTMB').textContent = fmtN(mB); document.getElementById('pvTStat').textContent = fmtN(t); document.getElementById('pvTP').textContent = fmtN(p); document.getElementById('pvTDF').textContent = fmtN(df); document.getElementById('pvTSE').textContent = fmtN(se);
+  document.getElementById('pvTSteps').innerHTML = steps + '<div class=step><b>p-valor:</b><div class=calc>p ≈ ' + fmtN(p) + '</div></div>';
+  pvDecision(p, 'pvTDecShort', 'pvTDecision', 'Há evidência de diferença entre os grupos.');
+  pvDrawBars('pvTCan', [{ name: 'Grupo A', values: A }, { name: 'Grupo B', values: B }]);
+}
+function pvParseAnova() { return document.getElementById('pvAnovaData').value.split(/\n+/).map(line => { var parts = line.split(':'); if (parts.length < 2) return null; var vals = parseNums(parts.slice(1).join(':')); return vals.length ? { name: parts[0].trim(), values: vals } : null; }).filter(Boolean); }
+function calcPVAnova() {
+  var groups = pvParseAnova(); if (groups.length < 2) return;
+  var all = groups.flatMap(g => g.values), N = all.length, k = groups.length, grand = mn(all);
+  var ssb = groups.reduce((s, g) => s + g.values.length * (mn(g.values) - grand) ** 2, 0);
+  var ssw = groups.reduce((s, g) => { var m = mn(g.values); return s + g.values.reduce((a, x) => a + (x - m) ** 2, 0); }, 0);
+  var dfb = k - 1, dfw = N - k, msb = ssb / dfb, msw = ssw / dfw, F = msb / msw, max = Math.max(8, F * 2 + 4), p = pRight(x => fPdf(x, dfb, dfw), F, max);
+  document.getElementById('pvAK').textContent = k; document.getElementById('pvAN').textContent = N; document.getElementById('pvAF').textContent = fmtN(F); document.getElementById('pvAP').textContent = fmtN(p); document.getElementById('pvADFB').textContent = dfb; document.getElementById('pvADFW').textContent = dfw;
+  document.getElementById('pvATable').innerHTML = '<table><tr><th>Fonte</th><th>SQ</th><th>gl</th><th>QM</th><th>F</th></tr><tr><td>Entre</td><td>' + fmtN(ssb) + '</td><td>' + dfb + '</td><td>' + fmtN(msb) + '</td><td>' + fmtN(F) + '</td></tr><tr><td>Dentro</td><td>' + fmtN(ssw) + '</td><td>' + dfw + '</td><td>' + fmtN(msw) + '</td><td>-</td></tr></table>';
+  document.getElementById('pvASteps').innerHTML = '<div class=step><b>Média geral:</b><div class=calc>' + fmtN(grand) + '</div></div><div class=step><b>SQ:</b><div class=calc>SQ entre=' + fmtN(ssb) + ' | SQ dentro=' + fmtN(ssw) + '</div></div><div class=step><b>QM:</b><div class=calc>QM entre=' + fmtN(msb) + ' | QM dentro=' + fmtN(msw) + '</div></div><div class=step><b>F:</b><div class=calc>F = ' + fmtN(F) + '</div></div><div class=step><b>p-valor:</b><div class=calc>p ≈ ' + fmtN(p) + '</div></div>';
+  pvDecision(p, 'pvADecShort', 'pvADecision', 'Pelo menos uma média difere das demais.');
+  pvDrawBars('pvACan', groups);
+}
+function pvParseMatrix() { return document.getElementById('pvChiData').value.trim().split(/\n+/).map(r => parseNums(r)).filter(r => r.length); }
+function calcPVChi() {
+  var M = pvParseMatrix(); if (M.length < 2) return;
+  var cols = M[0].length; if (!M.every(r => r.length === cols) || cols < 2) return;
+  var R = M.length, rowS = M.map(r => r.reduce((a, b) => a + b, 0)), colS = Array.from({ length: cols }, (_, j) => M.reduce((s, r) => s + r[j], 0)), N = rowS.reduce((a, b) => a + b, 0), chi = 0;
+  var html = '<table><tr><th>Célula</th><th>Obs.</th><th>Esp.</th><th>Contrib.</th></tr>';
+  for (var i = 0; i < R; i++) { for (var j = 0; j < cols; j++) { var exp = rowS[i] * colS[j] / N, con = (M[i][j] - exp) ** 2 / exp; chi += con; html += '<tr><td>' + (i + 1) + ',' + (j + 1) + '</td><td>' + fmtN(M[i][j]) + '</td><td>' + fmtN(exp) + '</td><td>' + fmtN(con) + '</td></tr>'; } }
+  html += '</table>';
+  var df = (R - 1) * (cols - 1), max = Math.max(20, chi * 2 + 5), p = pRight(x => chiPdf(x, df), chi, max);
+  document.getElementById('pvCStat').textContent = fmtN(chi); document.getElementById('pvCDF').textContent = df; document.getElementById('pvCP').textContent = fmtN(p);
+  document.getElementById('pvCTable').innerHTML = html;
+  document.getElementById('pvCSteps').innerHTML = '<div class=step><b>Passo 1:</b><div class=calc>Totais de linhas, colunas, geral.</div></div><div class=step><b>Passo 2:</b><div class=calc>Esperado = linha × coluna / total.</div></div><div class=step><b>Passo 3:</b><div class=calc>χ² = Σ(obs−esp)²/esp = ' + fmtN(chi) + '</div></div><div class=step><b>Passo 4:</b><div class=calc>gl = ' + df + '</div></div><div class=step><b>p-valor:</b><div class=calc>p ≈ ' + fmtN(p) + '</div></div>';
+  pvDecision(p, 'pvCDecShort', 'pvCDecision', 'Há evidência de associação.');
+  pvDrawDist('pvCCan', x => chiPdf(x, df), chi, max, 'χ²');
+}
+function pvSetT(n) { if (n === 1) { document.getElementById('pvTA').value = '10,11,12,11,13'; document.getElementById('pvTB').value = '14,15,13,16,15'; document.getElementById('pvTType').value = 'welch'; } if (n === 2) { document.getElementById('pvTA').value = '7,14,9,15,10'; document.getElementById('pvTB').value = '10,18,12,20,13'; } if (n === 3) { document.getElementById('pvTA').value = '10,11,12,13,12'; document.getElementById('pvTB').value = '12,13,14,15,14'; document.getElementById('pvTType').value = 'paired'; } calcPVT(); }
+function pvSetAnova(n) { if (n === 1) document.getElementById('pvAnovaData').value = 'Controle: 10, 11, 12, 11, 13\nTratamento 1: 14, 15, 13, 16, 15\nTratamento 2: 17, 18, 16, 19, 18'; if (n === 2) document.getElementById('pvAnovaData').value = 'Controle: 10, 11, 12, 11, 13\nTratamento 1: 11, 12, 13, 12, 12\nTratamento 2: 10, 13, 12, 14, 11'; calcPVAnova(); }
+function pvSetChi(n) { if (n === 1) document.getElementById('pvChiData').value = '30, 10\n15, 25'; if (n === 2) document.getElementById('pvChiData').value = '20, 15, 10\n14, 18, 13\n8, 12, 22'; calcPVChi(); }
+['pvTA', 'pvTB', 'pvTType', 'pvTTail'].forEach(id => document.getElementById(id).addEventListener('input', calcPVT));
+document.getElementById('pvAnovaData').addEventListener('input', calcPVAnova);
+document.getElementById('pvChiData').addEventListener('input', calcPVChi);
+
+// ======================== PAGE 3: ANOVA FISHER ========================
+function anovaEl(id) { return document.getElementById(id); }
+function anovaFmt(x) { return Number.isFinite(x) ? x.toLocaleString('pt-BR', { maximumFractionDigits: 5 }) : '-'; }
+function anovaParseData() {
+  return document.getElementById('anovaData2').value.split(/\n+/).map(line => {
+    line = line.trim(); if (!line) return null;
+    var name = 'Tratamento', valuesText = line;
+    if (line.includes(':')) { var i = line.indexOf(':'); name = line.slice(0, i).trim() || 'Tratamento'; valuesText = line.slice(i + 1); }
+    var values = parseNums(valuesText); if (values.length < 2) return null;
+    return { name, values };
+  }).filter(Boolean);
+}
+function anovaDesenhar(groups) {
+  var c = document.getElementById('anovaGrafico2').getContext('2d'); c.clearRect(0, 0, 1000, 340);
+  var all = groups.flatMap(g => g.values), vmin = Math.min(...all) - 1, vmax = Math.max(...all) + 1, range = vmax - vmin || 1;
+  var base = 285, top = 45, left = 60, right = 940, gap = (right - left) / groups.length;
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(left, base); c.lineTo(right, base); c.stroke();
+  c.fillStyle = '#172033'; c.font = 'bold 15px Arial'; c.textAlign = 'center'; c.fillText('Pontos = dados | linha laranja = média', 500, 26);
+  groups.forEach((g, gi) => {
+    var x0 = left + gi * gap, m = mn(g.values);
+    c.fillStyle = '#172033'; c.font = 'bold 13px Arial'; c.fillText(g.name, x0 + gap / 2, 320);
+    g.values.forEach((v, i) => { var x = x0 + 24 + i * 18, y = base - (v - vmin) / range * (base - top); c.beginPath(); c.arc(x, y, 7, 0, 7); c.fillStyle = gi % 2 ? '#16a34a' : '#2563eb'; c.fill(); c.fillStyle = '#111'; c.font = '11px Arial'; c.fillText(v, x, y - 10); });
+    var ym = base - (m - vmin) / range * (base - top);
+    c.strokeStyle = '#ef6c00'; c.lineWidth = 4; c.beginPath(); c.moveTo(x0 + 12, ym); c.lineTo(x0 + gap - 18, ym); c.stroke();
+  });
+}
+function calcAnovaFisher() {
+  var groups = anovaParseData();
+  if (groups.length < 2) { anovaEl('anovaStatus2').className = 'box info'; anovaEl('anovaStatus2').innerHTML = 'Digite pelo menos dois tratamentos.'; return; }
+  var all = groups.flatMap(g => g.values), grand = mn(all), ssb = 0, ssw = 0, passos = '';
+  passos += '<div class=step><b>PASSO 1 — média geral</b><div class=calc>Média geral = ' + anovaFmt(grand) + '</div></div>';
+  groups.forEach(g => { var m = mn(g.values), part = g.values.length * Math.pow(m - grand, 2); ssb += part; passos += '<div class=step><b>PASSO 2 — SQ entre: ' + g.name + '</b><div class=calc>' + g.values.length + ' × (' + anovaFmt(m) + ' − ' + anovaFmt(grand) + ')² = <b>' + anovaFmt(part) + '</b></div></div>'; });
+  passos += '<div class=step><b>PASSO 3 — SQ entre total</b><div class=calc>SQ entre = <b>' + anovaFmt(ssb) + '</b></div></div>';
+  var dentro = '';
+  groups.forEach(g => { var m = mn(g.values); dentro += '<b>' + g.name + '</b><br>'; g.values.forEach(v => { var cv = Math.pow(v - m, 2); ssw += cv; dentro += '(' + anovaFmt(v) + ' − ' + anovaFmt(m) + ')² = ' + anovaFmt(cv) + '<br>'; }); dentro += '<br>'; });
+  passos += '<div class=step><b>PASSO 4 — SQ dentro</b><div class=calc>' + dentro + '<b>SQ dentro = ' + anovaFmt(ssw) + '</b></div></div>';
+  var k = groups.length, N = all.length, dfb = k - 1, dfw = N - k;
+  if (dfw <= 0 || ssw === 0) { anovaEl('anovaStatus2').className = 'box info'; anovaEl('anovaStatus2').innerHTML = 'Não foi possível calcular.'; return; }
+  var msb = ssb / dfb, msw = ssw / dfw, F = msb / msw, p = pRight(x => fPdf(x, dfb, dfw), F, Math.max(12, F * 2 + 6));
+  passos += '<div class=step><b>PASSO 5 — gl</b><div class=calc>gl entre=' + dfb + ' | gl dentro=' + dfw + '</div></div>';
+  passos += '<div class=step><b>PASSO 6 — QM</b><div class=calc>QM entre=' + anovaFmt(msb) + ' | QM dentro=' + anovaFmt(msw) + '</div></div>';
+  passos += '<div class=step><b>PASSO 7 — F</b><div class=calc>F = ' + anovaFmt(msb) + ' / ' + anovaFmt(msw) + ' = <b>' + anovaFmt(F) + '</b></div></div>';
+  passos += '<div class=step><b>PASSO 8 — p-valor</b><div class=calc>p ≈ <b>' + anovaFmt(p) + '</b></div></div>';
+  anovaEl('anovaStatus2').className = 'box ok'; anovaEl('anovaStatus2').innerHTML = 'Cálculo com ' + k + ' tratamentos e ' + N + ' observações.';
+  anovaEl('aF2').textContent = anovaFmt(F); anovaEl('aP2').textContent = anovaFmt(p); anovaEl('aSSB2').textContent = anovaFmt(ssb); anovaEl('aSSW2').textContent = anovaFmt(ssw); anovaEl('aDFB2').textContent = dfb; anovaEl('aDFW2').textContent = dfw; anovaEl('aMSB2').textContent = anovaFmt(msb); anovaEl('aMSW2').textContent = anovaFmt(msw);
+  anovaEl('anovaPassos2').innerHTML = passos;
+  anovaEl('anovaTabela2').innerHTML = '<table><tr><th>Fonte</th><th>SQ</th><th>gl</th><th>QM</th><th>F</th></tr><tr><td>Entre</td><td>' + anovaFmt(ssb) + '</td><td>' + dfb + '</td><td>' + anovaFmt(msb) + '</td><td>' + anovaFmt(F) + '</td></tr><tr><td>Dentro</td><td>' + anovaFmt(ssw) + '</td><td>' + dfw + '</td><td>' + anovaFmt(msw) + '</td><td>-</td></tr><tr><td>Total</td><td>' + anovaFmt(ssb + ssw) + '</td><td>' + (N - 1) + '</td><td>-</td><td>-</td></tr></table>';
+  anovaEl('anovaDecisao2').className = 'box ' + (p < 0.05 ? 'ok' : 'bad');
+  anovaEl('anovaDecisao2').innerHTML = p < 0.05 ? '<b>Decisão:</b><br>p < 0,05. Há evidência de diferença entre médias.' : '<b>Decisão:</b><br>p ≥ 0,05. A variabilidade natural pode explicar as diferenças.';
+  anovaDesenhar(groups);
+}
+function anovaExemploForte() { document.getElementById('anovaData2').value = 'Controle: 10, 11, 12, 11, 13\nTratamento 1: 14, 15, 13, 16, 15\nTratamento 2: 17, 18, 16, 19, 18'; calcAnovaFisher(); }
+function anovaExemploFraco() { document.getElementById('anovaData2').value = 'Controle: 10, 11, 12, 11, 13\nTratamento 1: 11, 12, 13, 12, 12\nTratamento 2: 10, 13, 12, 14, 11'; calcAnovaFisher(); }
+function anovaExemploDois() { document.getElementById('anovaData2').value = 'Controle: 10, 11, 12, 11, 13\nTratamento: 14, 15, 13, 16, 15'; calcAnovaFisher(); }
+document.getElementById('anovaData2').addEventListener('input', () => { clearTimeout(window.anovaTimer); window.anovaTimer = setTimeout(calcAnovaFisher, 600); });
+
+// ======================== PAGE 4: PLANO CARTESIANO ========================
+function cartEl(id) { return document.getElementById(id); }
+function cartFmt(x) { return Number.isFinite(x) ? x.toLocaleString('pt-BR', { maximumFractionDigits: 4 }) : '-'; }
+function cartParse() {
+  return document.getElementById('cartDados').value.trim().split(/\n+/).map(line => {
+    var vals = line.replace(/;/g, ',').split(',').map(v => Number(v.trim().replace(',', '.')));
+    if (vals.length < 2 || !Number.isFinite(vals[0]) || !Number.isFinite(vals[1])) return null;
+    return { x: vals[0], y: vals[1] };
+  }).filter(Boolean);
+}
+function cartLinReg(xs, ys) { var mx = mn(xs), my = mn(ys), sxy = 0, sxx = 0; for (var i = 0; i < xs.length; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; } var b = sxy / sxx, a = my - b * mx; return { a, b }; }
+function cartR2(obs, pred) { var my = mn(obs), sst = obs.reduce((s, y) => s + (y - my) ** 2, 0), sse = obs.reduce((s, y, i) => s + (y - pred[i]) ** 2, 0); return 1 - sse / sst; }
+function cartLogisticFit(xs, ys) { var L = Math.max(...ys) * 1.08, best = { L, k: 1, x0: mn(xs), sse: Infinity }, vmin = Math.min(...xs), vmax = Math.max(...xs), step = (vmax - vmin) / 40 || 1; for (var kk = 0.05; kk <= 2.5; kk += 0.05) { for (var x0 = vmin; x0 <= vmax; x0 += step) { var pred = xs.map(x => L / (1 + Math.exp(-kk * (x - x0)))), sse = ys.reduce((s, y, i) => s + (y - pred[i]) ** 2, 0); if (sse < best.sse) best = { L, k: kk, x0, sse }; } } return best; }
+function cartYModel(x, modelo, p) { if (modelo === 'linear') return p.a + p.b * x; if (modelo === 'exponencial') return p.a * Math.exp(p.b * x); if (modelo === 'logaritmico') return p.a + p.b * Math.log(x); if (modelo === 'potencia') return p.a * Math.pow(x, p.b); if (modelo === 'logistico') return p.L / (1 + Math.exp(-p.k * (x - p.x0))); }
+function cartCalcular() {
+  var data = cartParse(); if (data.length < 3) { alert('Digite pelo menos 3 pares X,Y.'); return; }
+  var xs = data.map(d => d.x), ys = data.map(d => d.y), modelo = document.getElementById('cartModelo').value, pred = [], eq = '', nome = '', params = {}, valid = true, steps = '';
+  if (modelo === 'linear') { var fit = cartLinReg(xs, ys); params = fit; pred = xs.map(x => fit.a + fit.b * x); eq = 'y = ' + cartFmt(fit.a) + ' + ' + cartFmt(fit.b) + 'x'; nome = 'Linear'; steps = '<div class=step><b>Inclinação:</b><div class=calc>b = ' + cartFmt(fit.b) + '</div></div><div class=step><b>Intercepto:</b><div class=calc>a = ' + cartFmt(fit.a) + '</div></div>'; }
+  if (modelo === 'exponencial') { if (ys.some(y => y <= 0)) valid = false; else { var lny = ys.map(y => Math.log(y)), fit = cartLinReg(xs, lny), a = Math.exp(fit.a), b = fit.b; params = { a, b }; pred = xs.map(x => a * Math.exp(b * x)); eq = 'y = ' + cartFmt(a) + '·e^(' + cartFmt(b) + 'x)'; nome = 'Exponencial'; steps = '<div class=step><b>Ajuste:</b><div class=calc>a=' + cartFmt(a) + ' | b=' + cartFmt(b) + '</div></div>'; } }
+  if (modelo === 'logaritmico') { if (xs.some(x => x <= 0)) valid = false; else { var lnx = xs.map(x => Math.log(x)), fit = cartLinReg(lnx, ys); params = fit; pred = xs.map(x => fit.a + fit.b * Math.log(x)); eq = 'y = ' + cartFmt(fit.a) + ' + ' + cartFmt(fit.b) + ' ln(x)'; nome = 'Logarítmico'; steps = '<div class=step><b>Ajuste:</b><div class=calc>a=' + cartFmt(fit.a) + ' | b=' + cartFmt(fit.b) + '</div></div>'; } }
+  if (modelo === 'potencia') { if (xs.some(x => x <= 0) || ys.some(y => y <= 0)) valid = false; else { var lnx = xs.map(x => Math.log(x)), lny = ys.map(y => Math.log(y)), fit = cartLinReg(lnx, lny), a = Math.exp(fit.a), b = fit.b; params = { a, b }; pred = xs.map(x => a * Math.pow(x, b)); eq = 'y = ' + cartFmt(a) + '·x^' + cartFmt(b); nome = 'Potência'; steps = '<div class=step><b>Ajuste:</b><div class=calc>a=' + cartFmt(a) + ' | b=' + cartFmt(b) + '</div></div>'; } }
+  if (modelo === 'logistico') { var fit = cartLogisticFit(xs, ys); params = fit; pred = xs.map(x => fit.L / (1 + Math.exp(-fit.k * (x - fit.x0)))); eq = 'y = ' + cartFmt(fit.L) + '/(1+e^(-' + cartFmt(fit.k) + '(x−' + cartFmt(fit.x0) + ')))'; nome = 'Logístico'; steps = '<div class=step><b>Ajuste:</b><div class=calc>L=' + cartFmt(fit.L) + ' | k=' + cartFmt(fit.k) + ' | x0=' + cartFmt(fit.x0) + '</div></div>'; }
+  if (!valid) { alert('Este modelo exige valores positivos de X e/ou Y.'); return; }
+  var R2 = cartR2(ys, pred);
+  cartEl('cModelo').textContent = nome; cartEl('cEq').textContent = eq; cartEl('cR2').textContent = cartFmt(R2); cartEl('cN').textContent = data.length;
+  cartEl('cartPassos').innerHTML = steps + '<div class=step><b>R²:</b><div class=calc>R² = ' + cartFmt(R2) + '</div></div>';
+  cartEl('cartTabela').innerHTML = '<b>Dados e valores previstos</b><table><tr><th>x</th><th>y obs.</th><th>y prev.</th><th>resíduo</th></tr>' + data.map((d, i) => '<tr><td>' + cartFmt(d.x) + '</td><td>' + cartFmt(d.y) + '</td><td>' + cartFmt(pred[i]) + '</td><td>' + cartFmt(d.y - pred[i]) + '</td></tr>').join('') + '</table>';
+  cartDesenhar(data, modelo, params, eq);
+}
+function cartDesenhar(data, modelo, p, eq) {
+  var c = document.getElementById('cartGrafico').getContext('2d'), W = 1000, H = 560;
+  c.clearRect(0, 0, W, H);
+  var xs = data.map(d => d.x), ys = data.map(d => d.y), xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys), pad = 70, curve = [];
+  for (var i = 0; i <= 200; i++) { var x = xmin + (xmax - xmin) * i / 200, y = cartYModel(x, modelo, p); if (Number.isFinite(y)) { curve.push({ x, y }); ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); } }
+  var xr = xmax - xmin || 1, yr = ymax - ymin || 1; xmin -= xr * 0.08; xmax += xr * 0.08; ymin -= yr * 0.12; ymax += yr * 0.12;
+  var Xc = x => pad + (x - xmin) / (xmax - xmin) * (W - 2 * pad), Yc = y => H - pad - (y - ymin) / (ymax - ymin) * (H - 2 * pad);
+  c.strokeStyle = '#64748b'; c.lineWidth = 3; c.beginPath(); c.moveTo(pad, H - pad); c.lineTo(W - pad, H - pad); c.moveTo(pad, H - pad); c.lineTo(pad, pad); c.stroke();
+  c.fillStyle = '#172033'; c.font = 'bold 18px Arial'; c.textAlign = 'center'; c.fillText('Eixo X: variável explicativa', W / 2, H - 25);
+  c.save(); c.translate(25, H / 2); c.rotate(-Math.PI / 2); c.fillText('Eixo Y: resposta', 0, 0); c.restore();
+  c.strokeStyle = '#e5e7eb'; c.lineWidth = 1; for (var i = 1; i < 5; i++) { var gx = pad + i * (W - 2 * pad) / 5, gy = pad + i * (H - 2 * pad) / 5; c.beginPath(); c.moveTo(gx, pad); c.lineTo(gx, H - pad); c.stroke(); c.beginPath(); c.moveTo(pad, gy); c.lineTo(W - pad, gy); c.stroke(); }
+  c.beginPath(); c.lineWidth = 5; c.strokeStyle = '#ef6c00'; curve.forEach((pt, i) => { if (i === 0) c.moveTo(Xc(pt.x), Yc(pt.y)); else c.lineTo(Xc(pt.x), Yc(pt.y)); }); c.stroke();
+  data.forEach(d => { c.beginPath(); c.arc(Xc(d.x), Yc(d.y), 9, 0, Math.PI * 2); c.fillStyle = '#1565c0'; c.fill(); c.strokeStyle = 'white'; c.lineWidth = 2; c.stroke(); c.fillStyle = '#111'; c.font = 'bold 13px Arial'; c.textAlign = 'center'; c.fillText('(' + cartFmt(d.x) + ',' + cartFmt(d.y) + ')', Xc(d.x), Yc(d.y) - 14); });
+  c.fillStyle = '#172033'; c.font = 'bold 20px Arial'; c.textAlign = 'center'; c.fillText(eq, W / 2, 40);
+}
+function cartExemplo(n) { if (n === 1) { document.getElementById('cartDados').value = '1, 2.1\n2, 3.9\n3, 6.2\n4, 7.8\n5, 10.1\n6, 11.9\n7, 14.2\n8, 15.8'; document.getElementById('cartModelo').value = 'linear'; } if (n === 2) { document.getElementById('cartDados').value = '1, 2\n2, 2.8\n3, 4.2\n4, 6.3\n5, 9.1\n6, 13.5\n7, 19.8\n8, 29.5'; document.getElementById('cartModelo').value = 'exponencial'; } if (n === 3) { document.getElementById('cartDados').value = '1, 3\n2, 6\n3, 11\n4, 21\n5, 37\n6, 55\n7, 70\n8, 80\n9, 86\n10, 89'; document.getElementById('cartModelo').value = 'logistico'; } cartCalcular(); }
+document.getElementById('cartDados').addEventListener('input', () => { clearTimeout(window.cartTimer); window.cartTimer = setTimeout(cartCalcular, 600); });
+document.getElementById('cartModelo').addEventListener('change', cartCalcular);
+
+// ======================== INIT ========================
+calcOne(); calcInd(); calcPair();
+calcPVT(); calcPVAnova(); calcPVChi();
+calcAnovaFisher();
+cartCalcular();
+</script>
+</body>
+</html>
